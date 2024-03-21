@@ -136,6 +136,8 @@ var generator = openapi3gen.NewGenerator(
 func RegisterOpenAPIOperation[T any, B any](s *Server, method, path string) (*openapi3.Operation, error) {
 	operation := openapi3.NewOperation()
 
+	operation.Tags = s.tags
+
 	// Tags
 	tag := tagFromType(*new(T))
 	if tag != "unknown-interface" {

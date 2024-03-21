@@ -65,6 +65,8 @@ type Server struct {
 	startTime             time.Time
 
 	OpenAPIConfig OpenAPIConfig
+
+	tags []string // OpenAPI tags
 }
 
 // NewServer creates a new server with the given options.

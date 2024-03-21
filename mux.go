@@ -38,6 +38,11 @@ func Group(s *Server, path string) *Server {
 	return newServer
 }
 
+func (s *Server) Tags(tags ...string) *Server {
+	s.tags = tags
+	return s
+}
+
 type Route[ResponseBody any, RequestBody any] struct {
 	operation *openapi3.Operation
 }

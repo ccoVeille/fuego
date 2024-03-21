@@ -9,6 +9,8 @@ import (
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-fuego/fuego"
 	"github.com/rs/cors"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Received struct {
@@ -25,11 +27,14 @@ func main() {
 		fuego.WithAddr("localhost:8088"),
 	)
 
+	s.UIHandler = openApiHandler
+
 	fuego.Use(s, cors.Default().Handler)
 	fuego.Use(s, chiMiddleware.Compress(5, "text/html", "text/css"))
 
+	group := fuego.Group(s, "/api").Tags("api", "v1")
 	// Fuego 🔥 handler with automatic OpenAPI generation, validation, (de)serialization and error handling
-	fuego.Post(s, "/", func(c *fuego.ContextWithBody[Received]) (MyResponse, error) {
+	fuego.Post(group, "/", func(c *fuego.ContextWithBody[Received]) (MyResponse, error) {
 		data, err := c.Body()
 		if err != nil {
 			return MyResponse{}, err
@@ -57,6 +62,14 @@ func main() {
 	})
 
 	s.Run()
+}
+
+func openApiHandler(specURL string) http.Handler {
+	return httpSwagger.Handler(
+		httpSwagger.Layout(httpSwagger.BaseLayout),
+		httpSwagger.PersistAuthorization(true),
+		httpSwagger.URL(specURL), // The url pointing to API definition
+	)
 }
 
 // InTransform will be called when using c.Body().
