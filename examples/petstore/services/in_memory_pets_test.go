@@ -3,6 +3,7 @@ package services
 import (
 	"testing"
 
+	controller "github.com/go-fuego/fuego/examples/petstore/controllers"
 	"github.com/go-fuego/fuego/examples/petstore/models"
 	"github.com/stretchr/testify/require"
 )
@@ -42,6 +43,17 @@ func TestInMemoryPets(t *testing.T) {
 		pets, err := service.GetAllPets()
 		require.NoError(t, err)
 		require.Len(t, pets, 2)
+	})
+
+	t.Run("can filter pets", func(t *testing.T) {
+		pets, err := service.FilterPets(controller.PetsFilter{Name: "kit", YoungerThan: 5})
+		require.NoError(t, err)
+		require.Len(t, pets, 1)
+		require.Equal(t, "kitkat", pets[0].Name)
+
+		pets, err = service.FilterPets(controller.PetsFilter{Name: "kit", YoungerThan: 1})
+		require.NoError(t, err)
+		require.Len(t, pets, 0)
 	})
 
 	t.Run("can get all pets by age", func(t *testing.T) {
